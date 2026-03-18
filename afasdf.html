@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Feliz Cumpleaños</title>
+
+<style>
+
+body{
+    margin:0;
+    background:#ffecf2;
+    font-family:Arial;
+    text-align:center;
+    overflow:hidden;
+}
+
+/* PANTALLA 1 */
+#pantalla1{
+    position:absolute;
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+h1{
+    font-size:clamp(30px, 8vw, 60px);
+    color:#ff3e7f;
+    animation:latido 1s infinite;
+}
+
+@keyframes latido{
+    0%{transform:scale(1)}
+    50%{transform:scale(1.1)}
+    100%{transform:scale(1)}
+}
+
+p{
+    font-size:clamp(16px, 4vw, 24px);
+    color:#444;
+}
+
+button{
+    margin-top:30px;
+    padding:15px 30px;
+    font-size:clamp(18px, 4vw, 25px);
+    border:none;
+    border-radius:20px;
+    background:#ff4da6;
+    color:white;
+    cursor:pointer;
+}
+
+/* PANTALLA 2 */
+#pantalla2{
+    display:none;
+    position:absolute;
+    width:100%;
+    height:100%;
+}
+
+/* Girador con efecto de entrada */
+#girasol{
+    position:absolute;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%) scale(0.1);
+    border-radius:30px;
+    max-width:70vw;     
+    height:auto;
+}
+
+/* animación de crecer */
+@keyframes crecer{
+    0%{transform:translateX(-50%) scale(0.1);}
+    100%{transform:translateX(-50%) scale(1);}
+}
+
+/* corazones flotantes desde el centro con tamaño variable */
+.corazon{
+    position:absolute;
+    color:#ff0000; /* rojo intenso */
+    animation:subirCorazon 4s linear forwards;
+    pointer-events:none;
+    font-size:36px; /* tamaño base más grande */
+    text-shadow: 1px 1px 3px #800000; /* efecto bonito */
+}
+
+@keyframes subirCorazon{
+    0%{
+        transform:translate(0,0) scale(0.8);
+        opacity:1;
+    }
+    100%{
+        transform:translate(var(--x), var(--y)) scale(var(--scale));
+        opacity:0;
+    }
+}
+
+/* PANTALLA 3 */
+#pantalla3{
+    display:none;
+    position:absolute;
+    width:100%;
+    height:100%;
+}
+
+/* Frase typing – Arial y más grande para celular */
+#fraseTyping{
+    position:absolute;
+    top:35%;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:clamp(30px,6vw,50px); /* más grande */
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    color:#000;
+    max-width:90vw;
+    text-align:center;
+    white-space:pre-wrap;
+}
+
+/* Estrellas opcionales */
+.estrella{
+    position:absolute;
+    color:gold;
+    font-size:clamp(12px,3vw,16px);
+    pointer-events:none;
+    animation:subirEstrella 1s linear forwards;
+}
+
+@keyframes subirEstrella{
+    0%{transform:translateY(0) scale(0); opacity:1;}
+    100%{transform:translateY(-50px) scale(1.2); opacity:0;}
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- PANTALLA 1 -->
+<div id="pantalla1">
+<h1>🎂 Feliz Cumpleaños 🎂</h1>
+<p>Hoy celebramos a una persona muy especial</p>
+<p>Que tu día esté lleno de amor ❤️</p>
+<p>y momentos hermosos 🌸</p>
+<button onclick="irPantalla2()">Aplástame aquí</button>
+</div>
+
+<!-- PANTALLA 2 -->
+<div id="pantalla2">
+<img id="girasol" src="girasol.jpg">
+</div>
+
+<!-- PANTALLA 3 -->
+<div id="pantalla3">
+<div id="fraseTyping"></div>
+</div>
+
+<audio id="musica" loop>
+<source src="musica.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+// PASO DE PANTALLA 1 → 2
+function irPantalla2(){
+    document.getElementById("pantalla1").style.display="none";
+    document.getElementById("pantalla2").style.display="block";
+
+    let girasol = document.getElementById("girasol");
+    girasol.style.animation = "crecer 1s forwards";
+
+    document.getElementById("musica").play();
+    explosionCorazones();
+
+    // pasar a pantalla3 automáticamente después de 3s
+    setTimeout(irPantalla3, 3000);
+}
+
+// PASO DE PANTALLA 2 → 3
+function irPantalla3(){
+    document.getElementById("pantalla2").style.display="none";
+    document.getElementById("pantalla3").style.display="block";
+    mostrarFraseTyping();
+}
+
+// CORAZONES desde el centro con tamaños más grandes
+function explosionCorazones(){
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    setInterval(function(){
+        let corazon = document.createElement("div");
+        corazon.className = "corazon";
+        corazon.innerHTML = "❤️";
+
+        // posición inicial en el centro
+        corazon.style.left = centerX + "px";
+        corazon.style.top = centerY + "px";
+
+        // tamaño aleatorio más grande
+        const scale = (Math.random() * 1 + 1.0).toFixed(2); // 1.0 a 2.0
+        corazon.style.setProperty('--scale', scale);
+
+        // movimiento aleatorio desde el centro
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = 250 + Math.random()*250; // distancia mayor
+        const x = Math.cos(angle) * distance + "px";
+        const y = Math.sin(angle) * distance * -1 + "px"; // negativo para subir
+
+        corazon.style.setProperty('--x', x);
+        corazon.style.setProperty('--y', y);
+
+        document.body.appendChild(corazon);
+        setTimeout(()=>{ corazon.remove(); }, 4000);
+
+    }, 150); // frecuencia de corazones
+}
+
+// EFECTO TYPING PARA LA FRASE
+function mostrarFraseTyping(){
+    const frase = `Curioso, pasó el tiempo, pero aún tienes ese "algo" que no se borra. Espero que hoy te consientan como se debe... aunque creo que aún me quedas debiendo una sonrisa. Hoy eres una bebé, naciste jjj. Recuérdate de mí Jasmin`;
+    const cont = document.getElementById("fraseTyping");
+    cont.innerHTML = "";
+    let i = 0;
+
+    function escribir(){
+        if(i < frase.length){
+            cont.innerHTML += frase.charAt(i);
+            i++;
+            setTimeout(escribir, 70);
+        }
+    }
+
+    escribir();
+}
+
+</script>
+
+</body>
+</html>
